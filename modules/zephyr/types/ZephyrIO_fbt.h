@@ -15,11 +15,14 @@
  *** Description: Template for Modular IO with boards running Zephyr OS
  *** Version:
  ***     1.0: 2024-01-12/Dirk Kaar -  -
+ ***     3.0: 2025-04-14/Patrick Aigner -  - changed package
  *************************************************************************/
 
 #pragma once
 
-#include "forte/funcbloc.h"
+#pragma region includes
+#include <types/ZephyrIOBase.h>
+#pragma endregion includes
 #include "forte/datatypes/forte_bool.h"
 #include "forte/datatypes/forte_string.h"
 #include "forte/datatypes/forte_time.h"
@@ -28,18 +31,15 @@
 #include "forte/datatypes/forte_array.h"
 #include "forte/datatypes/forte_array_fixed.h"
 #include "forte/datatypes/forte_array_variable.h"
-#pragma region includes
-#include <types/ZephyrIOBase.h>
-#pragma endregion includes
 
 #pragma region base class spec
 class FORTE_ZephyrIO final : public FORTE_ZephyrIOBase {
 #pragma endregion base class spec
-    DECLARE_FIRMWARE_FB(FORTE_ZephyrIO)
+  DECLARE_FIRMWARE_FB(FORTE_ZephyrIO)
 
   private:
-    static const TEventID scmEventINITID = 0;
     static const TEventID scmEventINITOID = 0;
+    static const TEventID scmEventINITID = 0;
 
 #pragma region remove executeEvent()
     // using FORTE_ZephyrIOBase::executeEvent
@@ -59,7 +59,7 @@ class FORTE_ZephyrIO final : public FORTE_ZephyrIOBase {
 #pragma endregion define IOs
 
   public:
-    FORTE_ZephyrIO(forte::core::StringId paInstanceNameId, forte::core::CFBContainer &paContainer);
+    FORTE_ZephyrIO(CStringDictionary::TStringId paInstanceNameId, forte::core::CFBContainer &paContainer);
 
     CIEC_BOOL var_QI;
     CIEC_TIME var_UpdateInterval;
@@ -93,3 +93,4 @@ class FORTE_ZephyrIO final : public FORTE_ZephyrIOBase {
       evt_INIT(paQI, paUpdateInterval, paQO, paSTATUS);
     }
 };
+

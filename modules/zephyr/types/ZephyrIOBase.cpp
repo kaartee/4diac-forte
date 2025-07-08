@@ -14,12 +14,20 @@
 #include "handler/IODeviceController.h"
 
 FORTE_ZephyrIOBase::FORTE_ZephyrIOBase(forte::core::CFBContainer &paContainer,
-                                       const SFBInterfaceSpec &paInterfaceSpec,
-                                       const forte::core::StringId paInstanceNameId) :
-    forte::core::io::IOConfigFBController(paContainer, paInterfaceSpec, paInstanceNameId) {};
+  const SFBInterfaceSpec &paInterfaceSpec,
+  const CStringDictionary::TStringId paInstanceNameId) :
+  forte::core::io::IOConfigFBController(paContainer, paInterfaceSpec, paInstanceNameId) {};
 
 FORTE_ZephyrIOBase::~FORTE_ZephyrIOBase() {
   DEVLOG_INFO("FORTE_ZephyrIOBase dtor\n");
+}
+
+void FORTE_ZephyrIOBase::executeEvent(const TEventID paEIID, CEventChainExecutionThread *const paECET) {
+  switch(paEIID) {
+    case scmEventINITID:
+      sendOutputEvent(scmEventINITOID, paECET);
+      break;
+  }
 }
 
 forte::core::io::IODeviceController *FORTE_ZephyrIOBase::createDeviceController(CDeviceExecution &paDeviceExecution) {

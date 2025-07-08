@@ -64,7 +64,7 @@ IOHandlePWM::IOHandlePWM(IODeviceController *paDeviceCtrl, std::string const &pa
   if (!paId.empty()) {
     mPwmPeriodId = paId + "_Period";
     mPwmPeriodHandle = new IOHandlePWMPeriod(paDeviceCtrl, this);
-    IOMapper::getInstance().registerHandle(mPwmPeriodId, mPwmPeriodHandle);
+    IOMapper::getInstance().registerHandle(mPwmPeriodId, *mPwmPeriodHandle);
   }
 }
 

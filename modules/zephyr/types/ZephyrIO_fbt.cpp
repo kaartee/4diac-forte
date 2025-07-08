@@ -15,11 +15,10 @@
  *** Description: Template for Modular IO with boards running Zephyr OS
  *** Version:
  ***     1.0: 2024-01-12/Dirk Kaar -  -
+ ***     3.0: 2025-04-14/Patrick Aigner -  - changed package
  *************************************************************************/
 
 #include "ZephyrIO_fbt.h"
-
-using namespace forte::core::literals;
 
 #include "forte/datatypes/forte_time.h"
 #include "forte/iec61131_functions.h"
@@ -30,18 +29,32 @@ using namespace forte::core::literals;
 #pragma region includes
 #include <handler/IOHandleGPIODescriptor.h>
 #include <handler/IOHandleADCDescriptor.h>
+#include <handler/IOHandlePWMDescriptor.h>
 #include "handler/IODeviceController.h"
 #pragma endregion includes
 
-DEFINE_FIRMWARE_FB(FORTE_ZephyrIO, "ZephyrIO"_STRID)
+using namespace std::literals;
+
+USE_STRING_ID(BOOL);
+USE_STRING_ID(EInit);
+USE_STRING_ID(INIT);
+USE_STRING_ID(INITO);
+USE_STRING_ID(QI);
+USE_STRING_ID(QO);
+USE_STRING_ID(STATUS);
+USE_STRING_ID(STRING);
+USE_STRING_ID(TIME);
+USE_STRING_ID(UpdateInterval);
+USE_STRING_ID(ZephyrIO);
 
 namespace {
-  const auto cDataInputNames = std::array{"QI"_STRID, "UpdateInterval"_STRID};
-  const auto cDataOutputNames = std::array{"QO"_STRID, "STATUS"_STRID};
-  const auto cEventInputNames = std::array{"INIT"_STRID};
-  const auto cEventInputTypeIds = std::array{"EInit"_STRID};
-  const auto cEventOutputNames = std::array{"INITO"_STRID};
-  const auto cEventOutputTypeIds = std::array{"EInit"_STRID};
+  const auto cEventInputNames = std::array{STRID(INIT)};
+  const auto cEventInputTypeIds = std::array{STRID(EInit)};
+  const auto cEventOutputNames = std::array{STRID(INITO)};
+  const auto cEventOutputTypeIds = std::array{STRID(EInit)};
+  const auto cDataInputNames = std::array{STRID(QI), STRID(UpdateInterval)};
+  const auto cDataOutputNames = std::array{STRID(QO), STRID(STATUS)};
+
   const SFBInterfaceSpec cFBInterfaceSpec = {
       .mEINames = cEventInputNames,
       .mEITypeNames = cEventInputTypeIds,
@@ -53,12 +66,14 @@ namespace {
       .mSocketNames = {},
       .mPlugNames = {},
   };
-} // namespace
+}
 
-FORTE_ZephyrIO::FORTE_ZephyrIO(const forte::core::StringId paInstanceNameId, forte::core::CFBContainer &paContainer) :
-#pragma region base class spec
+DEFINE_FIRMWARE_FB(FORTE_ZephyrIO, STRID(ZephyrIO))
+
+// region base class spec
+FORTE_ZephyrIO::FORTE_ZephyrIO(const CStringDictionary::TStringId paInstanceNameId, forte::core::CFBContainer &paContainer) :
     FORTE_ZephyrIOBase(paContainer, cFBInterfaceSpec, paInstanceNameId),
-#pragma endregion base class spec
+// endregion base class spec    
     var_QI(0_BOOL),
     var_UpdateInterval(40000000_TIME),
     var_QO(0_BOOL),
@@ -67,9 +82,13 @@ FORTE_ZephyrIO::FORTE_ZephyrIO(const forte::core::StringId paInstanceNameId, for
     conn_QI(nullptr),
     conn_UpdateInterval(nullptr),
     conn_QO(*this, 0, var_QO),
-    conn_STATUS(*this, 1, var_STATUS) {};
+    conn_STATUS(*this, 1, var_STATUS) {
+};
 
 void FORTE_ZephyrIO::setInitialValues() {
+#pragma region base class initializer
+  FORTE_ZephyrIOBase::setInitialValues();
+#pragma endregion base class initializer
   var_QI = 0_BOOL;
   var_UpdateInterval = 40000000_TIME;
   var_QO = 0_BOOL;
@@ -81,29 +100,31 @@ void FORTE_ZephyrIO::setInitialValues() {
 #pragma endregion remove executeEvent()
 
 void FORTE_ZephyrIO::readInputData(const TEventID paEIID) {
-  switch (paEIID) {
+  switch(paEIID) {
     case scmEventINITID: {
       readData(0, var_QI, conn_QI);
       readData(1, var_UpdateInterval, conn_UpdateInterval);
       break;
     }
-    default: break;
+    default:
+      break;
   }
 }
 
 void FORTE_ZephyrIO::writeOutputData(const TEventID paEIID) {
-  switch (paEIID) {
+  switch(paEIID) {
     case scmEventINITOID: {
-      writeData(cFBInterfaceSpec.getNumDIs() + 0, var_QO, conn_QO);
-      writeData(cFBInterfaceSpec.getNumDIs() + 1, var_STATUS, conn_STATUS);
+      writeData(2, var_QO, conn_QO);
+      writeData(3, var_STATUS, conn_STATUS);
       break;
     }
-    default: break;
+    default:
+      break;
   }
 }
 
 CIEC_ANY *FORTE_ZephyrIO::getDI(const size_t paIndex) {
-  switch (paIndex) {
+  switch(paIndex) {
     case 0: return &var_QI;
     case 1: return &var_UpdateInterval;
   }
@@ -111,7 +132,7 @@ CIEC_ANY *FORTE_ZephyrIO::getDI(const size_t paIndex) {
 }
 
 CIEC_ANY *FORTE_ZephyrIO::getDO(const size_t paIndex) {
-  switch (paIndex) {
+  switch(paIndex) {
     case 0: return &var_QO;
     case 1: return &var_STATUS;
   }
@@ -119,14 +140,14 @@ CIEC_ANY *FORTE_ZephyrIO::getDO(const size_t paIndex) {
 }
 
 CEventConnection *FORTE_ZephyrIO::getEOConUnchecked(const TPortId paIndex) {
-  switch (paIndex) {
+  switch(paIndex) {
     case 0: return &conn_INITO;
   }
   return nullptr;
 }
 
 CDataConnection **FORTE_ZephyrIO::getDIConUnchecked(const TPortId paIndex) {
-  switch (paIndex) {
+  switch(paIndex) {
     case 0: return &conn_QI;
     case 1: return &conn_UpdateInterval;
   }
@@ -134,7 +155,7 @@ CDataConnection **FORTE_ZephyrIO::getDIConUnchecked(const TPortId paIndex) {
 }
 
 CDataConnection *FORTE_ZephyrIO::getDOConUnchecked(const TPortId paIndex) {
-  switch (paIndex) {
+  switch(paIndex) {
     case 0: return &conn_QO;
     case 1: return &conn_STATUS;
   }

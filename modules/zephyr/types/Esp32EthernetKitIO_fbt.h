@@ -15,11 +15,14 @@
  *** Description: Template for Modular IO with Esp32EthernetKit board
  *** Version:
  ***     1.0: 2024-01-13/Dirk O. Kaar -  -
+ ***     3.0: 2025-04-14/Patrick Aigner -  - changed package
  *************************************************************************/
 
 #pragma once
 
-#include "forte/funcbloc.h"
+#pragma region includes
+#include <types/ZephyrIOBase.h>
+#pragma endregion includes
 #include "forte/datatypes/forte_bool.h"
 #include "forte/datatypes/forte_string.h"
 #include "forte/datatypes/forte_time.h"
@@ -28,18 +31,15 @@
 #include "forte/datatypes/forte_array.h"
 #include "forte/datatypes/forte_array_fixed.h"
 #include "forte/datatypes/forte_array_variable.h"
-#pragma region includes
-#include <types/ZephyrIOBase.h>
-#pragma endregion includes
 
 #pragma region base class spec
 class FORTE_Esp32EthernetKitIO final : public FORTE_ZephyrIOBase {
 #pragma endregion base class spec
-    DECLARE_FIRMWARE_FB(FORTE_Esp32EthernetKitIO)
+  DECLARE_FIRMWARE_FB(FORTE_Esp32EthernetKitIO)
 
   private:
-    static const TEventID scmEventINITID = 0;
     static const TEventID scmEventINITOID = 0;
+    static const TEventID scmEventINITID = 0;
 
 #pragma region remove executeEvent()
     // using FORTE_ZephyrIOBase::executeEvent
@@ -61,7 +61,7 @@ class FORTE_Esp32EthernetKitIO final : public FORTE_ZephyrIOBase {
 #pragma endregion define IOs
 
   public:
-    FORTE_Esp32EthernetKitIO(forte::core::StringId paInstanceNameId, forte::core::CFBContainer &paContainer);
+    FORTE_Esp32EthernetKitIO(CStringDictionary::TStringId paInstanceNameId, forte::core::CFBContainer &paContainer);
 
     CIEC_BOOL var_QI;
     CIEC_STRING var_LED0;
@@ -91,14 +91,7 @@ class FORTE_Esp32EthernetKitIO final : public FORTE_ZephyrIOBase {
     CDataConnection **getDIConUnchecked(TPortId) override;
     CDataConnection *getDOConUnchecked(TPortId) override;
 
-    void evt_INIT(const CIEC_BOOL &paQI,
-                  const CIEC_STRING &paLED0,
-                  const CIEC_STRING &paSW0,
-                  const CIEC_STRING &paADC_CH_0,
-                  const CIEC_STRING &paPWM,
-                  const CIEC_TIME &paUpdateInterval,
-                  CIEC_BOOL &paQO,
-                  CIEC_STRING &paSTATUS) {
+    void evt_INIT(const CIEC_BOOL &paQI, const CIEC_STRING &paLED0, const CIEC_STRING &paSW0, const CIEC_STRING &paADC_CH_0, const CIEC_STRING &paPWM, const CIEC_TIME &paUpdateInterval, CIEC_BOOL &paQO, CIEC_STRING &paSTATUS) {
       var_QI = paQI;
       var_LED0 = paLED0;
       var_SW0 = paSW0;
@@ -110,14 +103,8 @@ class FORTE_Esp32EthernetKitIO final : public FORTE_ZephyrIOBase {
       paSTATUS = var_STATUS;
     }
 
-    void operator()(const CIEC_BOOL &paQI,
-                    const CIEC_STRING &paLED0,
-                    const CIEC_STRING &paSW0,
-                    const CIEC_STRING &paADC_CH_0,
-                    const CIEC_STRING &paPWM,
-                    const CIEC_TIME &paUpdateInterval,
-                    CIEC_BOOL &paQO,
-                    CIEC_STRING &paSTATUS) {
+    void operator()(const CIEC_BOOL &paQI, const CIEC_STRING &paLED0, const CIEC_STRING &paSW0, const CIEC_STRING &paADC_CH_0, const CIEC_STRING &paPWM, const CIEC_TIME &paUpdateInterval, CIEC_BOOL &paQO, CIEC_STRING &paSTATUS) {
       evt_INIT(paQI, paLED0, paSW0, paADC_CH_0, paPWM, paUpdateInterval, paQO, paSTATUS);
     }
 };
+

@@ -24,6 +24,11 @@ class FORTE_ZephyrIOBase : public forte::core::io::IOConfigFBController {
 
     static constexpr size_t initialDIOffset = 1;
 
+    void setInitialValues() override {
+      forte::core::io::IOConfigFBController::setInitialValues();
+    }
+
+    void executeEvent(TEventID paEIID, CEventChainExecutionThread *const paECET) override;
     void onStartup(CEventChainExecutionThread *const paECET) override;
 
   private:

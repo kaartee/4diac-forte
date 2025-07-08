@@ -83,15 +83,30 @@ Adapt the value of `forte_src_dir` to your actual FORTE source tree location.
 In your app's `prj.conf`, turn on the required C++ support:
 
 ```
+# Enable Zephyr application to be booted by MCUboot
+CONFIG_BOOTLOADER_MCUBOOT=y
+
+CONFIG_NET_DHCPV4=y
+CONFIG_NET_DHCPV4_OPTION_CALLBACKS=y
+
+CONFIG_NET_CONNECTION_MANAGER=y
+
+CONFIG_NET_MGMT=y
+CONFIG_NET_MGMT_EVENT=y
+
+CONFIG_LOG=y
+CONFIG_NET_LOG=y
+
+CONFIG_UPDATE_FORTE_BOOTFILE=n
+
+CONFIG_FPU=y
+
+#
+
 # Supporting FORTE logging system on Zephyr's logging subsys
 CONFIG_LOG=y
 CONFIG_LOG_MODE_IMMEDIATE=n
 CONFIG_LOG_BACKEND_UART=n
-CONFIG_SHELL_LOG_BACKEND=y
-
-# For C library support
-CONFIG_NEWLIB_LIBC=y
-CONFIG_NEWLIB_LIBC_FLOAT_PRINTF=y
 
 # For C++ standard library support
 CONFIG_CPP=y
@@ -112,6 +127,7 @@ CONFIG_HEAP_MEM_POOL_SIZE=64000
 CONFIG_NETWORKING=y
 CONFIG_NET_SOCKETS=y
 CONFIG_POSIX_API=y
+CONFIG_POSIX_C_LIB_EXT=y
 CONFIG_NET_ARP=y
 CONFIG_NET_UDP=y
 CONFIG_NET_TCP=y
@@ -144,6 +160,7 @@ CONFIG_GPIO=y
 CONFIG_ADC=y
 CONFIG_ADC_ASYNC=y
 CONFIG_PWM=y
+
 ```
 
 ## Implementing and extending a Modular IO Controller Configuration FB
