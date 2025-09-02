@@ -35,13 +35,11 @@ ExternalProject_Add(forte
 		cmake -G "Ninja"
 			-DCMAKE_C_COMPILER_WORKS=ON
 			-DCMAKE_CXX_COMPILER_WORKS=ON
-			-DNULLPTR_SUPPORTED=ON
 			-DCMAKE_SYSTEM_NAME=Generic
 			-DFORTE_ARCHITECTURE=Zephyr
 			-DFORTE_TESTS=OFF
 			-DFORTE_SUPPORT_BOOT_FILE=ON
 			-DFORTE_BUILD_EXECUTABLE=OFF
-			-DFORTE_BUILD_STATIC_LIBRARY=ON
 			-DFORTE_C_INTERFACE=ON
 			-DFORTE_MODULE_CONVERT=ON
 			-DFORTE_MODULE_IEC61131=ON
@@ -71,7 +69,7 @@ add_dependencies(forte zephyr_interface)
 add_library(forte_lib STATIC IMPORTED GLOBAL)
 add_dependencies(forte_lib forte)
 set_target_properties(forte_lib PROPERTIES IMPORTED_LOCATION ${FORTE_LIB_DIR}/libforte-c-static.a)
-target_include_directories(forte_lib INTERFACE ${forte_src_dir}/src/arch)
+target_include_directories(forte_lib INTERFACE ${forte_src_dir}/arch)
 ```
 
 ```

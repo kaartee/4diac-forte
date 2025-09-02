@@ -10,35 +10,27 @@
 #  Dirk Kaar - initial API and implementation and/or initial documentation
 # ************************************************************************************/
 
-SET(SOURCE_GROUP ${SOURCE_GROUP}\\zephyr)
+forte_register_architecture(Zephyr)
 
-forte_add_architecture(Zephyr)
+# TODO: should be replaced by better arch-independent mechanism
+target_include_directories(forte-global INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
-if("${FORTE_ARCHITECTURE}" STREQUAL "Zephyr")
+set(FORTE_LOGLEVEL "NOLOG" CACHE STRING "Loglevel to use" FORCE)
 
-  forte_add_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-  set(FORTE_LOGLEVEL "NOLOG" CACHE STRING "Loglevel to use" FORCE)
-  SET(FORTE_ZEPHYR_INCLUDES "" CACHE STRING "Folders to include from the Zephyr OS")
-
-  forte_add_sourcefile_hcpp(forte_thread forte_sync forte_sem)
-
-  forte_add_timerhandler(CZephyrTimerHandler zephyrtiha )
-  forte_add_sourcefile_hcpp(zephyrtiha)
-
-  forte_add_sourcefile_cpp(./forte_architecture_time.cpp)
-
-  forte_add_sourcefile_cpp(../common/forte_specific_architecture.cpp)
-  forte_add_sourcefile_cpp(../genforte_printer.cpp)
-  forte_add_sourcefile_cpp(zephyrforte_fileio.cpp)
-
-  forte_add_include_system_directories(${FORTE_ZEPHYR_INCLUDES})
-
-  if(FORTE_COM_ETH)
-    forte_add_handler(CFDSelectHandler sockhand)
-    forte_add_sourcefile_hcpp( ../fdselecthand ../bsdsocketinterf)
-    forte_add_sourcefile_h(../gensockhand.h)
-    forte_add_sourcefile_hcpp(sockhand)
-  endif(FORTE_COM_ETH)
-
-endif()
+target_sources(forte-arch PRIVATE
+    forte_architecture_time.cpp
+    forte_thread.cpp forte_thread.h
+    forte_sync.cpp forte_sync.h
+    forte_sem.cpp forte_sem.h
+    zephyrtiha.cpp zephyrtiha.h
+    ../genforte_printer.cpp
+    zephyrforte_fileio.cpp
+    ../common/forte_specific_architecture.cpp
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/../fdselecthand.cpp>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/../fdselecthand.h>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/../bsdsocketinterf.cpp>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/../bsdsocketinterf.h>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/../gensockhand.h>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/sockhand.cpp>
+    $<$<BOOL:${FORTE_COM_ETH}>:${CMAKE_CURRENT_SOURCE_DIR}/sockhand.h>
+)

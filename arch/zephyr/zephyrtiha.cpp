@@ -13,6 +13,13 @@
 #include "forte/devexec.h"
 #include "zephyrtiha.h"
 #include "forte/util/forte_constants.h"
+#include "forte/timerhandlerfactory.h"
+
+using namespace forte::core::literals;
+
+namespace {
+  [[maybe_unused]] const forte::core::TimerHandlerFactory::EntryImpl<CZephyrTimerHandler> entry("default"_STRID);
+}
 
 #ifndef K_FP_REGS
 #define K_FP_REGS 0
