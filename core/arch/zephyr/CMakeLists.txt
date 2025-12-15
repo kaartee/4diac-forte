@@ -12,7 +12,7 @@
 
 SET(SOURCE_GROUP ${SOURCE_GROUP}\\zephyr)
 
-forte_add_architecture(Zephyr)
+forte_register_architecture(Zephyr)
 
 if("${FORTE_ARCHITECTURE}" STREQUAL "Zephyr")
 
