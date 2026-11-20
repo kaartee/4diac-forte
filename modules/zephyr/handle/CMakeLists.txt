@@ -9,7 +9,13 @@
 # documentation
 # ############################################################################
 
+target_include_directories(forte-zephyr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_sources(forte-zephyr PRIVATE
-            IOHandleGPIO.h IOHandleGPIO.cpp IOHandleADC.h IOHandleADC.cpp
-            IOHandlePWM.h IOHandlePWM.cpp
+    IOHandleGPIO.h
+    IOHandleGPIO.cpp
+    IOHandleADC.h
+    IOHandleADC.cpp
+    IOHandlePWM.h
+    IOHandlePWM.cpp
 )

@@ -1,48 +1,69 @@
-# ############################################################################
-# Copyright (c) 2023 KT Elektronik GmbH This program and the accompanying
-# materials are made available under the terms of the Eclipse Public License
-# 2.0 which is available at http://www.eclipse.org/legal/epl-2.0.
+#############################################################################
+# Copyright (c) 2023, 2026 KT Elektronik GmbH
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License 2.0 which is available at
+# http://eclipse.org.
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-# Contributors: Dirk Kaar - initial API and implementation and/or initial
-# documentation
-# ############################################################################
+# Contributors:
+#   Dirk Kaar - initial API and implementation and/or initial documentation
+#############################################################################
 
 if (NOT FORTE_ARCHITECTURE STREQUAL "Zephyr")
     return()
 endif ()
 
-# ############################################################################
-# Zephyr FBs Base
-# ############################################################################
+option(FORTE_MODULE_ZEPHYR "Support for Zephyr OS I/O" OFF)
+option(FORTE_MODULE_ZEPHYR_TEMPLATE "Support for the Zephyr template board" OFF)
+option(FORTE_MODULE_ESP32ETHERNETKIT "Support for the Esp32EthernetKit board" OFF)
 
-# ############################################################################
-# Zephyr template FBs
-# ############################################################################
-
-option(FORTE_MODULE_ZEPHYR "Support for the Zephyr template board" OFF)
+# Automatically enable base Zephyr I/O support if any Zephyr board FB is selected
+if (FORTE_MODULE_ZEPHYR_TEMPLATE OR FORTE_MODULE_ESP32ETHERNETKIT)
+    set(FORTE_MODULE_ZEPHYR ON CACHE BOOL "Support for Zephyr OS I/O" FORCE)
+endif ()
 
 if (NOT FORTE_MODULE_ZEPHYR)
     return()
 endif ()
 
-# ############################################################################
-# ESP32 Ethernet Kit FBs
-# ############################################################################
+add_library(forte-zephyr)
 
-option(FORTE_MODULE_ESP32ETHERNETKIT "Support for the Esp32EthernetKit board" OFF)
+target_sources(forte-zephyr
+    PRIVATE
+        types/src/ZephyrIOBase.cpp
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS types/include
+        FILES
+            types/include/forte/ZephyrIOBase.h
+)
 
-if (NOT FORTE_MODULE_ESP32ETHERNETKIT)
-    return()
+if (FORTE_MODULE_ZEPHYR_TEMPLATE)
+    target_sources(forte-zephyr
+        PRIVATE
+            types/src/ZephyrIO_fbt.cpp
+        PUBLIC
+            FILE_SET HEADERS
+            BASE_DIRS types/include
+            FILES
+                types/include/forte/ZephyrIO_fbt.h
+    )
 endif ()
 
-# ############################################################################
-add_library(forte-zephyr
-            types/include/forte/ZephyrIOBase.h types/src/ZephyrIOBase.cpp
-	    types/include/forte/ZephyrIO_fbt.h types/src/ZephyrIO_fbt.cpp
-	    types/include/forte/Esp32EthernetKitIO_fbt.h types/src/Esp32EthernetKitIO_fbt.cpp
-)
+if (FORTE_MODULE_ESP32ETHERNETKIT)
+    target_sources(forte-zephyr
+        PRIVATE
+            types/src/Esp32EthernetKitIO_fbt.cpp
+        PUBLIC
+            FILE_SET HEADERS
+            BASE_DIRS types/include
+            FILES
+                types/include/forte/Esp32EthernetKitIO_fbt.h
+    )
+endif ()
+
 target_link_libraries(forte-zephyr PUBLIC forte-core)
 target_link_libraries(forte PUBLIC $<IF:$<BOOL:${BUILD_SHARED_LIBS}>,forte-zephyr,$<LINK_LIBRARY:WHOLE_ARCHIVE,forte-zephyr>>)
 

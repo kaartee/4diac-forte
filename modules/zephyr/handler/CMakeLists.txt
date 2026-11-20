@@ -9,6 +9,9 @@
 # documentation
 # ############################################################################
 
-target_sources(forte-zephyr PRIVATE IODeviceController.h
-                                                IODeviceController.cpp
+target_include_directories(forte-zephyr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_sources(forte-zephyr PRIVATE
+    IODeviceController.h
+    IODeviceController.cpp
 )
