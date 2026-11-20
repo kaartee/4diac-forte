@@ -37,13 +37,17 @@ inline in_addr_t inet_addr(const char *cp) {
   return -1;
 }
 
-void setupMulticastGroup(char *paIPAddr, const char *paMCInterface);
-
-// these include needs to be last
+// these includes need to be last
 #include "forte/arch/gensockhand.h"
 #include "forte/arch/fdselecthand.h"
 #include "forte/arch/bsdsocketinterf.h"
 
-typedef CGenericIPComSocketHandler<CFDSelectHandler, CBSDSocketInterface> CIPComSocketHandler;
+namespace forte::arch {
+
+  void setupMulticastGroup(char *paIPAddr, const char *paMCInterface);
+
+  using CIPComSocketHandler = CGenericIPComSocketHandler<CFDSelectHandler, CBSDSocketInterface>;
+
+} // namespace forte::arch
 
 #endif /* SRC_ARCH_ZEPHYR_SOCKHAND_H_ */

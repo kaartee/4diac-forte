@@ -18,25 +18,29 @@
 #include "forte/util/forte_constants.h"
 #include <zephyr/kernel.h>
 
-uint_fast64_t getNanoSecondsMonotonicArch() {
-  return static_cast<uint_fast64_t>(k_uptime_ticks() * (forte::util::constants::cNanosecondsPerSecond /
-                                                        static_cast<uint_fast64_t>(CONFIG_SYS_CLOCK_TICKS_PER_SEC)));
-}
+namespace forte::arch {
 
-uint_fast64_t getNanoSecondsRealtimeArch() {
-  return static_cast<uint_fast64_t>(k_uptime_ticks() * (forte::util::constants::cNanosecondsPerSecond /
-                                                        static_cast<uint_fast64_t>(CONFIG_SYS_CLOCK_TICKS_PER_SEC)));
-}
+  uint_fast64_t getNanoSecondsMonotonicArch() {
+    return static_cast<uint_fast64_t>(k_uptime_ticks() * (forte::util::constants::cNanosecondsPerSecond /
+                                                          static_cast<uint_fast64_t>(CONFIG_SYS_CLOCK_TICKS_PER_SEC)));
+  }
 
-time_t forte_timegm(struct tm *pa_tm) {
-  time_t tm = mktime(pa_tm);
-  return mktime(gmtime(&tm));
-}
+  uint_fast64_t getNanoSecondsRealtimeArch() {
+    return static_cast<uint_fast64_t>(k_uptime_ticks() * (forte::util::constants::cNanosecondsPerSecond /
+                                                          static_cast<uint_fast64_t>(CONFIG_SYS_CLOCK_TICKS_PER_SEC)));
+  }
 
-struct tm *forte_localtime(const time_t *paTime, struct tm *const paResult) {
-  return localtime_r(paTime, paResult);
-}
+  time_t forte_timegm(struct tm *pa_tm) {
+    time_t tm = mktime(pa_tm);
+    return mktime(gmtime(&tm));
+  }
 
-struct tm *forte_gmtime(const time_t *const paTime, struct tm *const paResult) {
-  return gmtime_r(paTime, paResult);
-}
+  struct tm *forte_localtime(const time_t *paTime, struct tm *const paResult) {
+    return localtime_r(paTime, paResult);
+  }
+
+  struct tm *forte_gmtime(const time_t *const paTime, struct tm *const paResult) {
+    return gmtime_r(paTime, paResult);
+  }
+
+} // namespace forte::arch

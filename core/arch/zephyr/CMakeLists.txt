@@ -1,5 +1,6 @@
-#/************************************************************************************
-# Copyright (c) 2023 - 2024 KT Elektronik GmbH, Jose Cabral
+#############################################################################
+# Copyright (c) 2023 - 2025 KT Elektronik GmbH, Jose Cabral
+#
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License 2.0 which is available at
 # http://www.eclipse.org/legal/epl-2.0.
@@ -7,38 +8,50 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 # Contributors:
-#  Dirk Kaar - initial API and implementation and/or initial documentation
-# ************************************************************************************/
+#   Dirk Kaar - initial API and implementation and/or initial documentation
+#############################################################################
 
-SET(SOURCE_GROUP ${SOURCE_GROUP}\\zephyr)
+forte_register_architecture(Zephyr)
 
-forte_add_architecture(Zephyr)
+if(NOT "${FORTE_ARCHITECTURE}" STREQUAL "Zephyr")
+    return()
+endif()
 
-if("${FORTE_ARCHITECTURE}" STREQUAL "Zephyr")
+set(FORTE_LOGLEVEL "NOLOG" CACHE STRING "Loglevel to use" FORCE)
+set(FORTE_ZEPHYR_INCLUDES "" CACHE STRING "Folders to include from the Zephyr OS")
 
-  forte_add_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(forte-core PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
 
-  set(FORTE_LOGLEVEL "NOLOG" CACHE STRING "Loglevel to use" FORCE)
-  SET(FORTE_ZEPHYR_INCLUDES "" CACHE STRING "Folders to include from the Zephyr OS")
+if(FORTE_ZEPHYR_INCLUDES)
+    target_include_directories(forte-core SYSTEM PRIVATE ${FORTE_ZEPHYR_INCLUDES})
+endif()
 
-  forte_add_sourcefile_hcpp(forte_thread forte_sync forte_sem)
+target_sources(forte-core PRIVATE
+    include/forte/arch/forte_thread.h
+    forte_thread.cpp
+    include/forte/arch/forte_sync.h
+    forte_sync.cpp
+    include/forte/arch/forte_sem.h
+    forte_sem.cpp
+    include/forte/arch/zephyrtiha.h
+    zephyrtiha.cpp
+    forte_architecture_time.cpp
+    zephyrforte_fileio.cpp
+    ../common/src/forte_specific_architecture.cpp
+    ../common/src/genforte_printer.cpp
+)
 
-  forte_add_timerhandler(CZephyrTimerHandler zephyrtiha )
-  forte_add_sourcefile_hcpp(zephyrtiha)
+set_property(TARGET forte-core APPEND PROPERTY FORTE_TIMER_HANDLERS "forte::arch::CZephyrTimerHandler:forte/arch/zephyrtiha.h")
 
-  forte_add_sourcefile_cpp(./forte_architecture_time.cpp)
-
-  forte_add_sourcefile_cpp(../common/forte_specific_architecture.cpp)
-  forte_add_sourcefile_cpp(../genforte_printer.cpp)
-  forte_add_sourcefile_cpp(zephyrforte_fileio.cpp)
-
-  forte_add_include_system_directories(${FORTE_ZEPHYR_INCLUDES})
-
-  if(FORTE_COM_ETH)
-    forte_add_handler(CFDSelectHandler sockhand)
-    forte_add_sourcefile_hcpp( ../fdselecthand ../bsdsocketinterf)
-    forte_add_sourcefile_h(../gensockhand.h)
-    forte_add_sourcefile_hcpp(sockhand)
-  endif(FORTE_COM_ETH)
-
+if(FORTE_COM_ETH)
+    target_sources(forte-core PRIVATE
+        ../common/src/fdselecthand.cpp
+        ../common/src/bsdsocketinterf.cpp
+        include/forte/arch/sockhand.h
+        sockhand.cpp
+    )
+    set_property(TARGET forte-core APPEND PROPERTY FORTE_HANDLERS "forte::arch::CFDSelectHandler:forte/arch/sockhand.h")
 endif()

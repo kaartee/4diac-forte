@@ -12,11 +12,15 @@
 
 #include "forte/arch/forte_sync.h"
 
-CZephyrSyncObject::CZephyrSyncObject() {
-  mutex = static_cast<struct k_mutex *>(k_malloc(sizeof(struct k_mutex)));
-  k_mutex_init(mutex);
-}
+namespace forte::arch {
 
-CZephyrSyncObject::~CZephyrSyncObject() {
-  k_free(mutex);
-}
+  CZephyrSyncObject::CZephyrSyncObject() {
+    mutex = static_cast<struct k_mutex *>(k_malloc(sizeof(struct k_mutex)));
+    k_mutex_init(mutex);
+  }
+
+  CZephyrSyncObject::~CZephyrSyncObject() {
+    k_free(mutex);
+  }
+
+} // namespace forte::arch

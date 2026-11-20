@@ -39,9 +39,9 @@ endif ()
 
 # ############################################################################
 add_library(forte-zephyr
-            types/ZephyrIOBase.h types/ZephyrIOBase.cpp types/ZephyrIO_fbt.h
-            types/ZephyrIO_fbt.cpp types/Esp32EthernetKitIO_fbt.h
-            types/Esp32EthernetKitIO_fbt.cpp
+            types/include/forte/ZephyrIOBase.h types/src/ZephyrIOBase.cpp
+	    types/include/forte/ZephyrIO_fbt.h types/src/ZephyrIO_fbt.cpp
+	    types/include/forte/Esp32EthernetKitIO_fbt.h types/src/Esp32EthernetKitIO_fbt.cpp
 )
 target_link_libraries(forte-zephyr PUBLIC forte-core)
 target_link_libraries(forte PUBLIC $<IF:$<BOOL:${BUILD_SHARED_LIBS}>,forte-zephyr,$<LINK_LIBRARY:WHOLE_ARCHIVE,forte-zephyr>>)

@@ -85,7 +85,7 @@ add_subdirectory(posix)
 # add_subdirectory(vxworks)
 add_subdirectory(fake_time)
 add_subdirectory(win32)
-# add_subdirectory(zephyr)
+add_subdirectory(zephyr)
 
 get_property(architectures TARGET forte-core PROPERTY forte_architectures)
 list(SORT architectures)

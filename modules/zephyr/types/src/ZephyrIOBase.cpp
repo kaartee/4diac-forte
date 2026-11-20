@@ -10,7 +10,7 @@
   Dirk Kaar - initial API and implementation and/or initial documentation
  ************************************************************************************/
 
-#include "ZephyrIOBase.h"
+#include "forte/ZephyrIOBase.h"
 #include "handler/IODeviceController.h"
 
 FORTE_ZephyrIOBase::FORTE_ZephyrIOBase(forte::CFBContainer &paContainer,
