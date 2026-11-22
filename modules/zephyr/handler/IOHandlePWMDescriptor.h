@@ -13,7 +13,7 @@
 #ifndef IOHANDLEPMWDESCRIPTOR_H
 #define IOHANDLEPMWDESCRIPTOR_H
 
-#include <handler/IOHandleDescriptor.h>
+#include <IOHandleDescriptor.h>
 #include <zephyr/drivers/pwm.h>
 
 class IOHandlePWMDescriptor : public IOHandleDescriptor {

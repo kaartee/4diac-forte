@@ -22,10 +22,10 @@
 #include "forte/datatypes/forte_time.h"
 #include "forte/forte_st_util.h"
 #pragma region includes
-#include <handler/IOHandleGPIODescriptor.h>
-#include <handler/IOHandleADCDescriptor.h>
-#include <handler/IOHandlePWMDescriptor.h>
-#include "handler/IODeviceController.h"
+#include <IOHandleGPIODescriptor.h>
+#include <IOHandleADCDescriptor.h>
+#include <IOHandlePWMDescriptor.h>
+#include "IODeviceController.h"
 #pragma endregion includes
 
 using namespace std::literals;
@@ -56,10 +56,9 @@ namespace forte {
 
   DEFINE_FIRMWARE_FB(FORTE_Esp32EthernetKitIO, "Esp32EthernetKitIO"_STRID, TypeHash)
 
-  FORTE_Esp32EthernetKitIO::FORTE_Esp32EthernetKitIO(const StringId paInstanceNameId, CFBContainer &paContainer) :
 #pragma region base class spec
+  FORTE_Esp32EthernetKitIO::FORTE_Esp32EthernetKitIO(const StringId paInstanceNameId, CFBContainer &paContainer) :
       FORTE_ZephyrIOBase(paContainer, cFBInterfaceSpec, paInstanceNameId),
-#pragma endregion base class spec
       var_QI(0_BOOL),
       var_LED0(""_STRING),
       var_SW0(""_STRING),
@@ -78,6 +77,7 @@ namespace forte {
       conn_QO(*this, 0, var_QO),
       conn_STATUS(*this, 1, var_STATUS) {
   };
+#pragma endregion base class spec
 
   void FORTE_Esp32EthernetKitIO::setInitialValues() {
     CFunctionBlock::setInitialValues();
@@ -200,7 +200,7 @@ namespace forte {
   }; // namespace
 
   void FORTE_Esp32EthernetKitIO::setConfig() {
-    IODeviceController::Config config;
+    ::IODeviceController::Config config;
     config.updateInterval =
         static_cast<CIEC_TIME *>(getDI(FORTE_ZephyrIOBase::initialDIOffset + FORTE_Esp32EthernetKitIO::numberOfGPIOs +
                                        FORTE_Esp32EthernetKitIO::numberOfADCChannels +

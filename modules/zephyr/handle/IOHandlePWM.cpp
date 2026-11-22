@@ -12,9 +12,11 @@
 
 #include "IOHandlePWM.h"
 
+using namespace forte;
+
 class IOHandlePWMPeriod : public forte::io::IOHandle {
     using IOObserver = forte::io::IOObserver;
-    using IOHandle = IOHandle;
+    using IOHandle = forte::io::IOHandle;
     using IOMapper = forte::io::IOMapper;
 
   public:
@@ -35,13 +37,13 @@ class IOHandlePWMPeriod : public forte::io::IOHandle {
     }
 
   protected:
-    void onObserver(IOObserver *paObserver) {
+    void onObserver(IOObserver *paObserver) override {
       DEVLOG_INFO("IOHandlePWMPeriod::onObserver\n");
       IOHandle::onObserver(paObserver);
       mDirection = paObserver->getDirection();
     }
 
-    void dropObserver() {
+    void dropObserver() override {
       DEVLOG_INFO("IOHandlePWMPeriod::dropObserver\n");
       IOHandle::dropObserver();
       mDirection = IOMapper::UnknownDirection;
@@ -64,7 +66,7 @@ IOHandlePWM::IOHandlePWM(IODeviceController *paDeviceCtrl, std::string const &pa
   if (!paId.empty()) {
     mPwmPeriodId = paId + "_Period";
     mPwmPeriodHandle = new IOHandlePWMPeriod(paDeviceCtrl, this);
-    IOMapper::getInstance().registerHandle(mPwmPeriodId, mPwmPeriodHandle);
+    IOMapper::getInstance().registerHandle(mPwmPeriodId, *mPwmPeriodHandle);
   }
 }
 

@@ -13,7 +13,7 @@
 #ifndef IOHANDLEADCDESCRIPTOR_H
 #define IOHANDLEADCDESCRIPTOR_H
 
-#include <handler/IOHandleDescriptor.h>
+#include <IOHandleDescriptor.h>
 #include <zephyr/drivers/adc.h>
 
 class IOHandleADCDescriptor : public IOHandleDescriptor {

@@ -25,7 +25,7 @@
 #include "forte/datatypes/forte_time.h"
 #include "forte/forte_st_util.h"
 #pragma region includes
-#include <types/include/forte/ZephyrIOBase.h>
+#include "forte/ZephyrIOBase.h"
 #pragma endregion includes
 
 namespace forte {

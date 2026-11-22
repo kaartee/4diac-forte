@@ -11,63 +11,50 @@
 #   Dirk Kaar - initial API and implementation and/or initial documentation
 #############################################################################
 
-if (NOT FORTE_ARCHITECTURE STREQUAL "Zephyr")
+option(FORTE_MODULE_ZEPHYR "Zephyr RTOS hardware I/O support" OFF)
+option(FORTE_MODULE_ESP32ETHERNETKIT "Espressif ESP32-Ethernet-Kit I/O support" OFF)
+
+if (NOT FORTE_MODULE_ZEPHYR AND NOT FORTE_MODULE_ESP32ETHERNETKIT)
     return()
 endif ()
 
-option(FORTE_MODULE_ZEPHYR "Support for Zephyr OS I/O" OFF)
-option(FORTE_MODULE_ZEPHYR_TEMPLATE "Support for the Zephyr template board" OFF)
-option(FORTE_MODULE_ESP32ETHERNETKIT "Support for the Esp32EthernetKit board" OFF)
+add_library(forte-zephyr STATIC)
+set_property(GLOBAL APPEND PROPERTY FORTE_TARGETS forte-zephyr)
+target_link_libraries(forte-zephyr PUBLIC forte-core)
+target_link_libraries(forte PUBLIC forte-zephyr)
+install(TARGETS forte-zephyr EXPORT forte-export)
 
-# Automatically enable base Zephyr I/O support if any Zephyr board FB is selected
-if (FORTE_MODULE_ZEPHYR_TEMPLATE OR FORTE_MODULE_ESP32ETHERNETKIT)
-    set(FORTE_MODULE_ZEPHYR ON CACHE BOOL "Support for Zephyr OS I/O" FORCE)
-endif ()
-
-if (NOT FORTE_MODULE_ZEPHYR)
-    return()
-endif ()
-
-add_library(forte-zephyr)
-
-target_sources(forte-zephyr
-    PRIVATE
-        types/src/ZephyrIOBase.cpp
-    PUBLIC
-        FILE_SET HEADERS
-        BASE_DIRS types/include
-        FILES
-            types/include/forte/ZephyrIOBase.h
+target_include_directories(forte-zephyr PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/types/include>
 )
 
-if (FORTE_MODULE_ZEPHYR_TEMPLATE)
-    target_sources(forte-zephyr
-        PRIVATE
-            types/src/ZephyrIO_fbt.cpp
-        PUBLIC
-            FILE_SET HEADERS
-            BASE_DIRS types/include
-            FILES
-                types/include/forte/ZephyrIO_fbt.h
-    )
-endif ()
+target_include_directories(forte-zephyr PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/handler
+        ${CMAKE_CURRENT_SOURCE_DIR}/handle
+)
+
+target_sources(forte-zephyr PRIVATE
+        types/include/forte/ZephyrIOBase.h
+        types/include/forte/ZephyrIO_fbt.h
+        handler/IODeviceController.h
+        handler/IOHandleDescriptor.h
+        handler/IOHandleGPIODescriptor.h
+        handler/IOHandleADCDescriptor.h
+        handler/IOHandlePWMDescriptor.h
+        handle/IOHandleGPIO.h
+        handle/IOHandleADC.h
+        handle/IOHandlePWM.h
+        types/src/ZephyrIOBase.cpp
+        types/src/ZephyrIO_fbt.cpp
+        handler/IODeviceController.cpp
+        handle/IOHandleGPIO.cpp
+        handle/IOHandleADC.cpp
+        handle/IOHandlePWM.cpp
+)
 
 if (FORTE_MODULE_ESP32ETHERNETKIT)
-    target_sources(forte-zephyr
-        PRIVATE
+    target_sources(forte-zephyr PRIVATE
+            types/include/forte/Esp32EthernetKitIO_fbt.h
             types/src/Esp32EthernetKitIO_fbt.cpp
-        PUBLIC
-            FILE_SET HEADERS
-            BASE_DIRS types/include
-            FILES
-                types/include/forte/Esp32EthernetKitIO_fbt.h
     )
 endif ()
-
-target_link_libraries(forte-zephyr PUBLIC forte-core)
-target_link_libraries(forte PUBLIC $<IF:$<BOOL:${BUILD_SHARED_LIBS}>,forte-zephyr,$<LINK_LIBRARY:WHOLE_ARCHIVE,forte-zephyr>>)
-
-add_subdirectory(handler)
-add_subdirectory(handle)
-
-install(TARGETS forte-zephyr EXPORT forte-export FILE_SET HEADERS)

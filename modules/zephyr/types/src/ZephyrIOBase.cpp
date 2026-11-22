@@ -11,37 +11,41 @@
  ************************************************************************************/
 
 #include "forte/ZephyrIOBase.h"
-#include "handler/IODeviceController.h"
+#include "IODeviceController.h"
 
-FORTE_ZephyrIOBase::FORTE_ZephyrIOBase(forte::CFBContainer &paContainer,
-                                       const SFBInterfaceSpec &paInterfaceSpec,
-                                       const forte::StringId paInstanceNameId) :
-    forte::io::IOConfigFBController(paContainer, paInterfaceSpec, paInstanceNameId) {};
+namespace forte {
 
-FORTE_ZephyrIOBase::~FORTE_ZephyrIOBase() {
-  DEVLOG_INFO("FORTE_ZephyrIOBase dtor\n");
-}
+  FORTE_ZephyrIOBase::FORTE_ZephyrIOBase(CFBContainer &paContainer,
+                                         const SFBInterfaceSpec &paInterfaceSpec,
+                                         const StringId paInstanceNameId) :
+      forte::io::IOConfigFBController(paContainer, paInterfaceSpec, paInstanceNameId) {};
 
-forte::io::IODeviceController *FORTE_ZephyrIOBase::createDeviceController(CDeviceExecution &paDeviceExecution) {
-  return new IODeviceController(paDeviceExecution);
-}
+  FORTE_ZephyrIOBase::~FORTE_ZephyrIOBase() {
+    DEVLOG_INFO("FORTE_ZephyrIOBase dtor\n");
+  }
 
-void FORTE_ZephyrIOBase::onStartup(CEventChainExecutionThread *const paECET) {
-  /*
-    // Initialize handles
-    for (size_t i = 0; i < FORTE_ZephyrIOBase::numberOfIOs; i++) {
-      const auto id = std::string(*static_cast<CIEC_STRING*>(getDI(FORTE_ZephyrIOBase::initialDIOffset + i)));
-      // do not use verbatim, only for reference to copy & paste in FBT instance class:
-      const gpio_dt_spec* spec = nullptr;
-      gpio_flags_t flags = 0;
-      if (!spec) {
-        DEVLOG_ERROR("FORTE_ZephyrIO::onStartup: id %s, device spec is null\n", id.c_str());
-        continue;
+  forte::io::IODeviceController *FORTE_ZephyrIOBase::createDeviceController(CDeviceExecution &paDeviceExecution) {
+    return new ::IODeviceController(paDeviceExecution);
+  }
+
+  void FORTE_ZephyrIOBase::onStartup(CEventChainExecutionThread *const paECET) {
+    /*
+      // Initialize handles
+      for (size_t i = 0; i < FORTE_ZephyrIOBase::numberOfIOs; i++) {
+        const auto id = std::string(*static_cast<CIEC_STRING*>(getDI(FORTE_ZephyrIOBase::initialDIOffset + i)));
+        // do not use verbatim, only for reference to copy & paste in FBT instance class:
+        const gpio_dt_spec* spec = nullptr;
+        gpio_flags_t flags = 0;
+        if (!spec) {
+          DEVLOG_ERROR("FORTE_ZephyrIO::onStartup: id %s, device spec is null\n", id.c_str());
+          continue;
+        }
+        IOHandleGPIODescriptor descr(id, IOMapper::Out, spec, flags);
+        initHandle(descr);
       }
-      IOHandleGPIODescriptor descr(id, IOMapper::Out, spec, flags);
-      initHandle(descr);
-    }
-  */
+    */
 
-  started(paECET);
-}
+    started(paECET);
+  }
+
+} // namespace forte

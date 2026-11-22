@@ -17,17 +17,17 @@
 #include "forte/io/mapper/io_handle.h"
 #include "forte/extevhan.h"
 
-#include <handler/IOHandleDescriptor.h>
+#include <IOHandleDescriptor.h>
 
 class IODeviceController : public forte::io::IODeviceController,
-                           public RegisterExternalEventHandler<IODeviceController> {
+                           public forte::RegisterExternalEventHandler<IODeviceController> {
   public:
     using HandleDescriptor = forte::io::IODeviceController::HandleDescriptor;
     using IOMapper = forte::io::IOMapper;
     using IOHandle = forte::io::IOHandle;
 
   public:
-    explicit IODeviceController(CDeviceExecution &paDeviceExecution);
+    explicit IODeviceController(forte::CDeviceExecution &paDeviceExecution);
     ~IODeviceController() override;
 
     struct Config : forte::io::IODeviceController::Config {
@@ -57,7 +57,7 @@ class IODeviceController : public forte::io::IODeviceController,
     bool isHandleValueEqual(IOHandle &paHandle) override;
 
     struct Config mConfig;
-    CSemaphore mUpdateSema;
+    forte::arch::CSemaphore mUpdateSema;
 };
 
 #endif /* ifndef ZEPHYRIO_DEVICE_CONTROLLER_H */

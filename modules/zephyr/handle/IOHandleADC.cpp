@@ -13,6 +13,8 @@
 #include "IOHandleADC.h"
 #include "forte/datatypes/forte_dword.h"
 
+using namespace forte;
+
 IOHandleADC::IOHandleADC(IODeviceController *paDeviceCtrl, const adc_dt_spec *paADCSpec) :
     IOHandle(paDeviceCtrl, IOMapper::In, CIEC_ANY::e_DWORD),
     mADCSpec(paADCSpec) {
@@ -39,10 +41,9 @@ IOHandleADC::~IOHandleADC() {
   DEVLOG_INFO("IOHandleADC dtor\n");
 #ifdef CONFIG_ADC_ASYNC
   if (mState == SAMPLING || mState == NEWDATA) {
-    struct k_poll_event events[1] = {
-        K_POLL_EVENT_INITIALIZER(K_POLL_TYPE_SIGNAL, K_POLL_MODE_NOTIFY_ONLY, &mSamplingSignal),
-    };
-    k_poll(events, 1, K_FOREVER);
+    struct k_poll_event events;
+    k_poll_event_init(&events, K_POLL_TYPE_SIGNAL, K_POLL_MODE_NOTIFY_ONLY, &mSamplingSignal);
+    k_poll(&events, 1, K_FOREVER);
   }
 #endif // CONFIG_ADC_ASYNC
   mState = DESTROY;

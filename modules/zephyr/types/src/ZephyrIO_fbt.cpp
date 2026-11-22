@@ -19,13 +19,21 @@
 
 #include "forte/ZephyrIO_fbt.h"
 
+#include "forte/datatypes/forte_bool.h"
+#include "forte/datatypes/forte_string.h"
 #include "forte/datatypes/forte_time.h"
-#include "forte/forte_st_util.h"
-#pragma region includes
-#include <handler/IOHandleGPIODescriptor.h>
-#include <handler/IOHandleADCDescriptor.h>
-#include "handler/IODeviceController.h"
-#pragma endregion includes
+#include "forte/iec61131_functions.h"
+#include "forte/datatypes/forte_array_common.h"
+#include "forte/datatypes/forte_array.h"
+#include "forte/datatypes/forte_array_fixed.h"
+#include "forte/datatypes/forte_array_variable.h"
+
+#pragma region driver includes
+#include "IODeviceController.h"
+#include <IOHandleGPIODescriptor.h>
+
+#include <zephyr/drivers/gpio.h>
+#pragma endregion driver includes
 
 using namespace std::literals;
 using namespace forte::literals;
@@ -55,10 +63,9 @@ namespace forte {
 
   DEFINE_FIRMWARE_FB(FORTE_ZephyrIO, "ZephyrIO"_STRID, TypeHash)
 
-  FORTE_ZephyrIO::FORTE_ZephyrIO(const StringId paInstanceNameId, CFBContainer &paContainer) :
 #pragma region base class spec
+  FORTE_ZephyrIO::FORTE_ZephyrIO(const StringId paInstanceNameId, CFBContainer &paContainer) :
       FORTE_ZephyrIOBase(paContainer, cFBInterfaceSpec, paInstanceNameId),
-#pragma endregion base class spec
       var_QI(0_BOOL),
       var_UpdateInterval(40000000_TIME),
       var_QO(0_BOOL),
@@ -69,6 +76,7 @@ namespace forte {
       conn_QO(*this, 0, var_QO),
       conn_STATUS(*this, 1, var_STATUS) {
   };
+#pragma endregion base class spec
 
   void FORTE_ZephyrIO::setInitialValues() {
     CFunctionBlock::setInitialValues();
@@ -79,35 +87,33 @@ namespace forte {
   }
 
 #pragma region remove executeEvent()
-  // using FORTE_ZephyrIOBase::executeEvent
+      // using FORTE_ZephyrIOBase::executeEvent
 #pragma endregion remove executeEvent()
 
   void FORTE_ZephyrIO::readInputData(const TEventID paEIID) {
-    switch(paEIID) {
+    switch (paEIID) {
       case scmEventINITID: {
         readData(0, var_QI, conn_QI);
         readData(1, var_UpdateInterval, conn_UpdateInterval);
         break;
       }
-      default:
-        break;
+      default: break;
     }
   }
 
   void FORTE_ZephyrIO::writeOutputData(const TEventID paEIID) {
-    switch(paEIID) {
+    switch (paEIID) {
       case scmEventINITOID: {
-        writeData(2, var_QO, conn_QO);
-        writeData(3, var_STATUS, conn_STATUS);
+        writeData(cFBInterfaceSpec.getNumDIs() + 0, var_QO, conn_QO);
+        writeData(cFBInterfaceSpec.getNumDIs() + 1, var_STATUS, conn_STATUS);
         break;
       }
-      default:
-        break;
+      default: break;
     }
   }
 
   CIEC_ANY *FORTE_ZephyrIO::getDI(const size_t paIndex) {
-    switch(paIndex) {
+    switch (paIndex) {
       case 0: return &var_QI;
       case 1: return &var_UpdateInterval;
     }
@@ -115,7 +121,7 @@ namespace forte {
   }
 
   CIEC_ANY *FORTE_ZephyrIO::getDO(const size_t paIndex) {
-    switch(paIndex) {
+    switch (paIndex) {
       case 0: return &var_QO;
       case 1: return &var_STATUS;
     }
@@ -123,14 +129,14 @@ namespace forte {
   }
 
   CEventConnection *FORTE_ZephyrIO::getEOConUnchecked(const TPortId paIndex) {
-    switch(paIndex) {
+    switch (paIndex) {
       case 0: return &conn_INITO;
     }
     return nullptr;
   }
 
   CDataConnection **FORTE_ZephyrIO::getDIConUnchecked(const TPortId paIndex) {
-    switch(paIndex) {
+    switch (paIndex) {
       case 0: return &conn_QI;
       case 1: return &conn_UpdateInterval;
     }
@@ -138,19 +144,17 @@ namespace forte {
   }
 
   CDataConnection *FORTE_ZephyrIO::getDOConUnchecked(const TPortId paIndex) {
-    switch(paIndex) {
+    switch (paIndex) {
       case 0: return &conn_QO;
       case 1: return &conn_STATUS;
     }
     return nullptr;
   }
 
-#pragma region define IOs
+#pragma region custom IO implementation
   void FORTE_ZephyrIO::setConfig() {
-    IODeviceController::Config config;
-    config.updateInterval =
-        static_cast<CIEC_TIME *>(getDI(FORTE_ZephyrIOBase::initialDIOffset + FORTE_ZephyrIO::numberOfIOs))
-            ->getInMilliSeconds();
+    ::IODeviceController::Config config;
+    config.updateInterval = static_cast<unsigned int>(var_UpdateInterval.getInMilliSeconds());
     getDeviceController()->setConfig(&config);
   }
 
@@ -171,6 +175,5 @@ namespace forte {
 
     FORTE_ZephyrIOBase::onStartup(paECET);
   }
-#pragma endregion define IOs
-
-}
+#pragma endregion custom IO implementation
+} // namespace forte

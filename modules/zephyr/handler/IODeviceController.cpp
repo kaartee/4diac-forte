@@ -11,9 +11,14 @@
  ************************************************************************************/
 
 #include "IODeviceController.h"
-#include <handle/IOHandleGPIO.h>
-#include <handle/IOHandleADC.h>
-#include <handle/IOHandlePWM.h>
+#include <IOHandleGPIODescriptor.h>
+#include <IOHandleADCDescriptor.h>
+#include <IOHandlePWMDescriptor.h>
+#include <IOHandleGPIO.h>
+#include <IOHandleADC.h>
+#include <IOHandlePWM.h>
+
+using namespace forte;
 
 IODeviceController::IODeviceController(CDeviceExecution &paDeviceExecution) :
     forte::io::IODeviceController(paDeviceExecution) {

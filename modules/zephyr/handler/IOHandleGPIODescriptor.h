@@ -10,10 +10,11 @@
   Dirk Kaar - initial API and implementation and/or initial documentation
  ************************************************************************************/
 
-#ifndef IOHANDLEGPIODESCRIPTOR_H
-#define IOHANDLEGPIODESCRIPTOR_H
+#ifndef ZEPHYR_IO_HANDLE_GPIO_DESCRIPTOR_H
+#define ZEPHYR_IO_HANDLE_GPIO_DESCRIPTOR_H
 
-#include <handler/IOHandleDescriptor.h>
+#include "IOHandleDescriptor.h"
+
 #include <zephyr/drivers/gpio.h>
 
 class IOHandleGPIODescriptor : public IOHandleDescriptor {
@@ -22,7 +23,7 @@ class IOHandleGPIODescriptor : public IOHandleDescriptor {
                            forte::io::IOMapper::Direction paDirection,
                            const gpio_dt_spec *paGpioSpec,
                            gpio_flags_t paFlags) :
-        IOHandleDescriptor(paId, paDirection, Gpio),
+        IOHandleDescriptor(paId, paDirection, IOHandleDescriptor::Gpio),
         mGpioSpec(paGpioSpec),
         mFlags(paFlags) {
     }
@@ -35,9 +36,9 @@ class IOHandleGPIODescriptor : public IOHandleDescriptor {
       return mFlags;
     }
 
-  protected:
-    const gpio_dt_spec *mGpioSpec;
-    gpio_flags_t mFlags;
+  private:
+    const gpio_dt_spec *const mGpioSpec;
+    const gpio_flags_t mFlags;
 };
 
-#endif // IOHANDLEGPIODESCRIPTOR_H
+#endif /* ifndef ZEPHYR_IO_HANDLE_GPIO_DESCRIPTOR_H */

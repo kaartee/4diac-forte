@@ -13,12 +13,18 @@
 #include "forte/devexec.h"
 #include "forte/arch/zephyrtiha.h"
 #include "forte/util/forte_constants.h"
+#include "forte/timerhandlerfactory.h"
 
 #ifndef K_FP_REGS
 #define K_FP_REGS 0
 #endif // K_FP_REGS
 
+using namespace forte::literals;
+
 namespace forte::arch {
+  namespace {
+    [[maybe_unused]] const TimerHandlerFactory::EntryImpl<CZephyrTimerHandler> entry("default"_STRID);
+  }
 
   CZephyrTimerHandler::CZephyrTimerHandler(forte::CDeviceExecution &paDeviceExecution) :
       forte::CTimerHandler(paDeviceExecution) {

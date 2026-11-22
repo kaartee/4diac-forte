@@ -12,6 +12,8 @@
 
 #include "IOHandleGPIO.h"
 
+using namespace forte;
+
 IOHandleGPIO::IOHandleGPIO(IODeviceController *paDeviceCtrl,
                            IOMapper::Direction paDirection,
                            const gpio_dt_spec *paGPIOSpec,

@@ -10,12 +10,12 @@
   Dirk Kaar - initial API and implementation and/or initial documentation
  ************************************************************************************/
 
-#ifndef IOHANDLEADC_H
-#define IOHANDLEADC_H
+#ifndef ZEPHYR_IO_HANDLE_ADC_H
+#define ZEPHYR_IO_HANDLE_ADC_H
 
 #include "forte/io/mapper/io_observer.h"
-#include <handler/IODeviceController.h>
-#include <handler/IOHandleADCDescriptor.h>
+#include <IODeviceController.h>
+#include <IOHandleADCDescriptor.h>
 #include <stdint.h>
 
 class IODeviceController;
@@ -24,6 +24,7 @@ class IOHandleADC : public forte::io::IOHandle {
     using IOObserver = forte::io::IOObserver;
     using IOHandle = forte::io::IOHandle;
     using IOMapper = forte::io::IOMapper;
+    using CIEC_ANY = forte::CIEC_ANY;
 
   public:
     IOHandleADC(IODeviceController *paDeviceCtrl, const adc_dt_spec *paADCSpec);
@@ -73,4 +74,4 @@ class IOHandleADC : public forte::io::IOHandle {
     uint32_t mValue = 0;
 };
 
-#endif // IOHANDLEADC_H
+#endif /* ifndef ZEPHYR_IO_HANDLE_ADC_H */
