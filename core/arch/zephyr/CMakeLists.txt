@@ -17,7 +17,7 @@ if(NOT "${FORTE_ARCHITECTURE}" STREQUAL "Zephyr")
     return()
 endif()
 
-set(FORTE_LOGLEVEL "NOLOG" CACHE STRING "Loglevel to use" FORCE)
+set(FORTE_LOGLEVEL "LOGERROR" CACHE STRING "Loglevel to use")
 set(FORTE_ZEPHYR_INCLUDES "" CACHE STRING "Folders to include from the Zephyr OS")
 
 target_include_directories(forte-core PUBLIC
