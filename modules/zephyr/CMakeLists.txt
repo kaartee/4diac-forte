@@ -13,8 +13,9 @@
 
 option(FORTE_MODULE_ZEPHYR "Zephyr RTOS hardware I/O support" OFF)
 option(FORTE_MODULE_ESP32ETHERNETKIT "Espressif ESP32-Ethernet-Kit I/O support" OFF)
+option(FORTE_MODULE_ESP32C3DEVKITM "Espressif ESP32-C3-DevKitM-1 I/O support" OFF)
 
-if (NOT FORTE_MODULE_ZEPHYR AND NOT FORTE_MODULE_ESP32ETHERNETKIT)
+if (NOT FORTE_MODULE_ZEPHYR AND NOT FORTE_MODULE_ESP32ETHERNETKIT AND NOT FORTE_MODULE_ESP32C3DEVKITM)
     return()
 endif ()
 
@@ -56,5 +57,12 @@ if (FORTE_MODULE_ESP32ETHERNETKIT)
     target_sources(forte-zephyr PRIVATE
             types/include/forte/Esp32EthernetKitIO_fbt.h
             types/src/Esp32EthernetKitIO_fbt.cpp
+    )
+endif ()
+
+if (FORTE_MODULE_ESP32C3DEVKITM)
+    target_sources(forte-zephyr PRIVATE
+            types/include/forte/Esp32C3DevkitMIO_fbt.h
+            types/src/Esp32C3DevkitMIO_fbt.cpp
     )
 endif ()
