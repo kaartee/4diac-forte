@@ -14,8 +14,9 @@
 option(FORTE_MODULE_ZEPHYR "Zephyr RTOS hardware I/O support" OFF)
 option(FORTE_MODULE_ESP32ETHERNETKIT "Espressif ESP32-Ethernet-Kit I/O support" OFF)
 option(FORTE_MODULE_ESP32C3DEVKITM "Espressif ESP32-C3-DevKitM-1 I/O support" OFF)
+option(FORTE_MODULE_TEENSY41 "PJRC Teensy 4.1 I/O support" OFF)
 
-if (NOT FORTE_MODULE_ZEPHYR AND NOT FORTE_MODULE_ESP32ETHERNETKIT AND NOT FORTE_MODULE_ESP32C3DEVKITM)
+if (NOT FORTE_MODULE_ZEPHYR AND NOT FORTE_MODULE_ESP32ETHERNETKIT AND NOT FORTE_MODULE_ESP32C3DEVKITM AND NOT FORTE_MODULE_TEENSY41)
     return()
 endif ()
 
@@ -37,6 +38,7 @@ target_include_directories(forte-zephyr PRIVATE
 target_sources(forte-zephyr PRIVATE
         types/include/forte/ZephyrIOBase.h
         types/include/forte/ZephyrIO_fbt.h
+        types/include/forte/ZephyrWDT_fbt.h
         handler/IODeviceController.h
         handler/IOHandleDescriptor.h
         handler/IOHandleGPIODescriptor.h
@@ -47,6 +49,7 @@ target_sources(forte-zephyr PRIVATE
         handle/IOHandlePWM.h
         types/src/ZephyrIOBase.cpp
         types/src/ZephyrIO_fbt.cpp
+        types/src/ZephyrWDT_fbt.cpp
         handler/IODeviceController.cpp
         handle/IOHandleGPIO.cpp
         handle/IOHandleADC.cpp
@@ -64,5 +67,12 @@ if (FORTE_MODULE_ESP32C3DEVKITM)
     target_sources(forte-zephyr PRIVATE
             types/include/forte/Esp32C3DevkitMIO_fbt.h
             types/src/Esp32C3DevkitMIO_fbt.cpp
+    )
+endif ()
+
+if (FORTE_MODULE_TEENSY41)
+    target_sources(forte-zephyr PRIVATE
+            types/include/forte/Teensy41IO_fbt.h
+            types/src/Teensy41IO_fbt.cpp
     )
 endif ()

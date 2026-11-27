@@ -34,6 +34,8 @@ IOHandleADC::IOHandleADC(IODeviceController *paDeviceCtrl, const adc_dt_spec *pa
   k_work_init(&mADCWorkCtx.work, work_callback);
   mADCWorkCtx.self = this;
   k_poll_signal_init(&mSamplingSignal);
+#else // CONFIG_ADC_ASYNC
+  mSequence.options = nullptr;
 #endif // CONFIG_ADC_ASYNC
 }
 
